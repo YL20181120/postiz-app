@@ -80,7 +80,7 @@ services:
 
       # NEXT_PUBLIC_SENTRY_DSN: 'http://spotlight:8969/stream'
       # SENTRY_SPOTLIGHT: '1'
-
+      KIEAI_API_KEY: '123'
       # === Misc Settings
       OPENAI_API_KEY: ''
       NEXT_PUBLIC_DISCORD_SUPPORT: ''
@@ -131,6 +131,8 @@ services:
       POSTGRES_PASSWORD: postiz-password
       POSTGRES_USER: postiz-user
       POSTGRES_DB: postiz-db-local
+    ports:
+      - '5432:5432'
     volumes:
       - postgres-volume:/var/lib/postgresql/data
     networks:

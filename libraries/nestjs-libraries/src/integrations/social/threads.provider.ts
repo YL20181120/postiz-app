@@ -48,7 +48,7 @@ export class ThreadsProvider extends SocialAbstract implements SocialProvider {
     if (body.includes('The media could not be fetched from this URI')) {
       return {
         type: 'bad-body',
-        value: 'One of the media URLs is invalid or inaccessible, make sure it\'s being uploaded to Postiz first',
+        value: 'One of the media URLs is invalid or inaccessible, make sure it\'s being uploaded to Veloop first',
       };
     }
     if (body.includes('text must be at most 500 characters')) {
