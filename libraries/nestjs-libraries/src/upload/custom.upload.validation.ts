@@ -3,6 +3,7 @@ import {
   Injectable,
   PipeTransform,
 } from '@nestjs/common';
+import { normalizeUploadOriginalName } from '@gitroom/nestjs-libraries/upload/upload.filename';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const { fromBuffer } = require('file-type');
 
@@ -46,7 +47,7 @@ export class CustomFileValidationPipe implements PipeTransform {
     }
 
     value.mimetype = detected.mime;
-    const safeBase = (value.originalname || 'upload')
+    const safeBase = (normalizeUploadOriginalName(value.originalname) || 'upload')
       .replace(/\.[^./\\]*$/, '')
       .replace(/[\\/]/g, '_')
       .slice(0, 100) || 'upload';
