@@ -28,31 +28,6 @@ services:
       - 6379:6379
     networks:
       - postiz-network
-  postiz-pg-admin:
-    # ref: https://hub.docker.com/r/dpage/pgadmin4/tags
-    image: dpage/pgadmin4:latest
-    container_name: postiz-pg-admin
-    restart: always
-    ports:
-      - 8081:80
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: admin
-    networks:
-      - postiz-network
-  postiz-redisinsight:
-    # ref: https://hub.docker.com/r/redis/redisinsight
-    image: redis/redisinsight:latest
-    container_name: postiz-redisinsight
-    links:
-      - postiz-redis
-    ports:
-      - '5540:5540'
-    volumes:
-      - redisinsight:/data
-    networks:
-      - postiz-network
-    restart: always
 
   temporal-elasticsearch:
     container_name: temporal-elasticsearch
