@@ -11,8 +11,6 @@ export default async function AuthLayout({
 }: {
   children: ReactNode;
 }) {
-  const t = await getT();
-
   return (
     <div className="bg-[#0E0E0E] flex flex-1 p-[12px] gap-[12px] min-h-screen w-screen text-white">
       {/*<style>{`html, body {overflow-x: hidden;}`}</style>*/}
