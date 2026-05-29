@@ -88,6 +88,13 @@ export async function proxy(request: NextRequest) {
 
   const org = nextUrl.searchParams.get('org');
   const url = new URL(nextUrl).search;
+  const publicRoutes = ['/', '/terms-of-service', '/privacy-policy'];
+  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
+
+  if (isPublicRoute && !org) {
+    return topResponse;
+  }
+
   if (!nextUrl.pathname.startsWith('/auth') && !authCookie) {
     const providers = ['google', 'settings'];
     const findIndex = providers.find((p) => nextUrl.href.indexOf(p) > -1);
@@ -107,7 +114,12 @@ export async function proxy(request: NextRequest) {
 
   // If the url is /auth and the cookie exists, redirect to /
   if (nextUrl.pathname.startsWith('/auth') && authCookie) {
-    return NextResponse.redirect(new URL(`/${url}`, nextUrl.href));
+    return NextResponse.redirect(
+      new URL(
+        `${!!process.env.IS_GENERAL ? '/launches' : '/analytics'}${url}`,
+        nextUrl.href
+      )
+    );
   }
   if (nextUrl.pathname.startsWith('/auth') && !authCookie) {
     if (org) {
