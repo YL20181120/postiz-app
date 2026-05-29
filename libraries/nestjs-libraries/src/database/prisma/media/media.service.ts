@@ -82,16 +82,20 @@ export class MediaService {
   }
 
   async generateVideo(org: Organization, body: VideoDto) {
-    const totalCredits = await this._subscriptionService.checkCredits(
-      org,
-      'ai_videos'
-    );
+    const billingEnabled = !!process.env.STRIPE_PUBLISHABLE_KEY;
 
-    if (totalCredits.credits <= 0) {
-      throw new SubscriptionException({
-        action: AuthorizationActions.Create,
-        section: Sections.VIDEOS_PER_MONTH,
-      });
+    if (billingEnabled) {
+      const totalCredits = await this._subscriptionService.checkCredits(
+        org,
+        'ai_videos'
+      );
+
+      if (totalCredits.credits <= 0) {
+        throw new SubscriptionException({
+          action: AuthorizationActions.Create,
+          section: Sections.VIDEOS_PER_MONTH,
+        });
+      }
     }
 
     const video = this._videoManager.getVideoByName(body.type);
@@ -107,18 +111,24 @@ export class MediaService {
     await video.instance.processAndValidate(body.customParams);
     console.log('no err');
 
+    const generateAndSaveVideo = async () => {
+      const loadedData = await video.instance.process(
+        body.output,
+        body.customParams
+      );
+
+      const file = await this.storage.uploadSimple(loadedData);
+      return this.saveFile(org.id, file.split('/').pop(), file);
+    };
+
+    if (!billingEnabled) {
+      return generateAndSaveVideo();
+    }
+
     return await this._subscriptionService.useCredit(
       org,
       'ai_videos',
-      async () => {
-        const loadedData = await video.instance.process(
-          body.output,
-          body.customParams
-        );
-
-        const file = await this.storage.uploadSimple(loadedData);
-        return this.saveFile(org.id, file.split('/').pop(), file);
-      }
+      generateAndSaveVideo
     );
   }
 
