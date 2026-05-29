@@ -189,7 +189,19 @@ export default function PrivacyPolicy() {
             with the connected platform.
           </p>
 
-          <h2>10. Children&apos;s Privacy</h2>
+          <h2>10. Facebook / Meta Data Deletion Instructions</h2>
+          <p>
+            If you wish to delete your Veloop account or remove Facebook/Meta
+            data associated with your Veloop account, you can request data
+            deletion by contacting us at{' '}
+            <a href="mailto:lankafenqi@gmail.com">lankafenqi@gmail.com</a>.
+            We will process your request and permanently delete synced
+            Facebook/Meta platform data associated with your account within a
+            reasonable business period, unless retention is required by law,
+            security, fraud prevention, or legitimate operational obligations.
+          </p>
+
+          <h2>11. Children&apos;s Privacy</h2>
           <p>
             Veloop is not directed to children under the age required to consent
             to data processing in their jurisdiction, and we do not knowingly
@@ -197,7 +209,7 @@ export default function PrivacyPolicy() {
             authorization.
           </p>
 
-          <h2>11. Changes to This Policy</h2>
+          <h2>12. Changes to This Policy</h2>
           <p>
             We may update this Privacy Policy from time to time. If we make
             material changes, we may provide notice through the service or by
@@ -206,7 +218,7 @@ export default function PrivacyPolicy() {
             the updated policy.
           </p>
 
-          <h2>12. Contact Us</h2>
+          <h2>13. Contact Us</h2>
           <p>
             If you have questions or requests regarding this Privacy Policy or
             your information, contact us at{' '}
