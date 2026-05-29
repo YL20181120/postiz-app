@@ -54,7 +54,7 @@ export default function PrivacyPolicy() {
         </section>
 
         <article className="rounded-lg border border-[#30385f] bg-[#12152b] px-6 py-5 text-[#a8afcf] md:px-10 md:py-8 [&_a]:text-[#87dbea] [&_a:hover]:underline [&_h2]:mb-3 [&_h2]:mt-8 [&_h2]:text-[21px] [&_h2]:font-semibold [&_h2]:tracking-normal [&_h2]:text-[#e9ebff] [&_li]:leading-7 [&_p]:leading-7 [&_ul]:my-3 [&_ul]:list-disc [&_ul]:pl-6">
-          <h2>1. Who We Are</h2>
+          <h2 id="who-we-are">1. Who We Are</h2>
           <p>
             Veloop is a platform that helps users create, manage, schedule, and
             publish content to connected social media and content platforms.
@@ -63,7 +63,7 @@ export default function PrivacyPolicy() {
             <a href="https://veloop.aladdinai.me">veloop.aladdinai.me</a>.
           </p>
 
-          <h2>2. Information We Collect</h2>
+          <h2 id="information-we-collect">2. Information We Collect</h2>
           <p>We may collect the following types of information:</p>
           <ul>
             <li>
@@ -91,7 +91,7 @@ export default function PrivacyPolicy() {
             </li>
           </ul>
 
-          <h2>3. How We Use Information</h2>
+          <h2 id="how-we-use-information">3. How We Use Information</h2>
           <p>We use information to:</p>
           <ul>
             <li>Provide, maintain, secure, and improve the service.</li>
@@ -111,7 +111,9 @@ export default function PrivacyPolicy() {
             <li>Comply with legal obligations and enforce our Terms of Service.</li>
           </ul>
 
-          <h2>4. Social Platform Access and OAuth Data</h2>
+          <h2 id="social-platform-access-and-oauth-data">
+            4. Social Platform Access and OAuth Data
+          </h2>
           <p>
             When you connect a third-party account, such as a YouTube channel or
             another social platform, you authorize Veloop to access information
@@ -127,7 +129,7 @@ export default function PrivacyPolicy() {
             integration in Veloop.
           </p>
 
-          <h2>5. AI and Service Providers</h2>
+          <h2 id="ai-and-service-providers">5. AI and Service Providers</h2>
           <p>
             When you use AI-assisted creation or media generation features, the
             prompts, media, or related instructions required to complete your
@@ -137,7 +139,7 @@ export default function PrivacyPolicy() {
             terms, as applicable.
           </p>
 
-          <h2>6. How We Share Information</h2>
+          <h2 id="how-we-share-information">6. How We Share Information</h2>
           <p>We may share information:</p>
           <ul>
             <li>
@@ -161,7 +163,7 @@ export default function PrivacyPolicy() {
           </ul>
           <p>We do not sell your personal information for monetary consideration.</p>
 
-          <h2>7. Data Storage and Retention</h2>
+          <h2 id="data-storage-and-retention">7. Data Storage and Retention</h2>
           <p>
             We retain information for as long as necessary to provide the
             service, maintain your account, meet legal obligations, resolve
@@ -171,7 +173,7 @@ export default function PrivacyPolicy() {
             law.
           </p>
 
-          <h2>8. Security</h2>
+          <h2 id="security">8. Security</h2>
           <p>
             We use reasonable technical and organizational measures designed to
             protect information. However, no method of transmission or storage
@@ -180,7 +182,7 @@ export default function PrivacyPolicy() {
             unauthorized use.
           </p>
 
-          <h2>9. Your Choices and Rights</h2>
+          <h2 id="your-choices-and-rights">9. Your Choices and Rights</h2>
           <p>
             Depending on your location, you may have rights to request access,
             correction, deletion, portability, or restriction of certain
@@ -189,7 +191,9 @@ export default function PrivacyPolicy() {
             with the connected platform.
           </p>
 
-          <h2>10. Facebook / Meta Data Deletion Instructions</h2>
+          <h2 id="facebook-meta-data-deletion-instructions">
+            10. Facebook / Meta Data Deletion Instructions
+          </h2>
           <p>
             If you wish to delete your Veloop account or remove Facebook/Meta
             data associated with your Veloop account, you can request data
@@ -201,7 +205,7 @@ export default function PrivacyPolicy() {
             security, fraud prevention, or legitimate operational obligations.
           </p>
 
-          <h2>11. Children&apos;s Privacy</h2>
+          <h2 id="childrens-privacy">11. Children&apos;s Privacy</h2>
           <p>
             Veloop is not directed to children under the age required to consent
             to data processing in their jurisdiction, and we do not knowingly
@@ -209,7 +213,7 @@ export default function PrivacyPolicy() {
             authorization.
           </p>
 
-          <h2>12. Changes to This Policy</h2>
+          <h2 id="changes-to-this-policy">12. Changes to This Policy</h2>
           <p>
             We may update this Privacy Policy from time to time. If we make
             material changes, we may provide notice through the service or by
@@ -218,7 +222,7 @@ export default function PrivacyPolicy() {
             the updated policy.
           </p>
 
-          <h2>13. Contact Us</h2>
+          <h2 id="contact-us">13. Contact Us</h2>
           <p>
             If you have questions or requests regarding this Privacy Policy or
             your information, contact us at{' '}
