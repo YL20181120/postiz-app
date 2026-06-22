@@ -288,7 +288,7 @@ export default function Home() {
 
       <footer id="contact" className="bg-white">
         <div className="mx-auto flex max-w-7xl flex-col gap-6 px-5 py-10 md:flex-row md:items-center md:justify-between md:px-8">
-          <div>
+          <div className="max-w-2xl">
             <Image
               src="/veloop-logo-with-name.png"
               width={132}
@@ -296,11 +296,28 @@ export default function Home() {
               alt="Veloop"
               className="h-9 w-auto"
             />
-            <p className="mt-3 max-w-xl text-sm leading-6 text-[#4b5563]">
-              Veloop is operated for teams that need reliable social media
-              scheduling, publishing, and analytics tools. Contact:
-              lankafenqi@gmail.com
-            </p>
+            <address className="mt-5 grid gap-2 text-sm not-italic leading-6 text-[#4b5563] sm:grid-cols-[110px_1fr]">
+              <span className="font-semibold text-[#111827]">Company</span>
+              <span>STERLING CREST (PRIVATE) LIMITED</span>
+              <span className="font-semibold text-[#111827]">Address</span>
+              <span>
+                Western Dehiwala No. 147, (1st Floor), Anderson Road
+              </span>
+              <span className="font-semibold text-[#111827]">Phone</span>
+              <a
+                href="tel:+94743751858"
+                className="w-fit hover:text-[#111827] hover:underline"
+              >
+                +94743751858
+              </a>
+              <span className="font-semibold text-[#111827]">Email</span>
+              <a
+                href="mailto:lankafenqi@gmail.com"
+                className="w-fit break-all hover:text-[#111827] hover:underline"
+              >
+                lankafenqi@gmail.com
+              </a>
+            </address>
           </div>
           <div className="flex flex-wrap gap-4 text-sm font-medium text-[#374151]">
             <Link href="/terms-of-service" className="hover:text-[#111827]">
