@@ -59,7 +59,7 @@ export abstract class SocialAbstract {
 
   public handleErrors(
     body: string,
-    status: number,
+    status: number
   ):
     | { type: 'refresh-token' | 'bad-body' | 'retry'; value: string }
     | undefined {
@@ -117,12 +117,14 @@ export abstract class SocialAbstract {
     func: (...args: any[]) => Promise<T>,
     ignoreConcurrency?: boolean
   ) {
+    let globalErr = {};
     let value: any;
     try {
       value = await func();
     } catch (err) {
       const handle = this.handleErrors(safeStringify(err), 200);
       value = { err: true, value: 'Unknown Error', ...(handle || {}) };
+      globalErr = err;
     }
 
     if (value && value?.err && value?.value) {
@@ -134,7 +136,7 @@ export abstract class SocialAbstract {
           value.value || ''
         );
       }
-      throw new BadBody('', safeStringify({}), {} as any, value.value || '');
+      throw new BadBody('', safeStringify(globalErr), {} as any, value.value || '');
     }
 
     return value;
@@ -145,7 +147,8 @@ export abstract class SocialAbstract {
     options: RequestInit = {},
     identifier = '',
     totalRetries = 0,
-    ignoreConcurrency = false
+    ignoreConcurrency = false,
+    message = '',
   ): Promise<Response> {
     const request = await fetch(url, options);
 
@@ -154,7 +157,7 @@ export abstract class SocialAbstract {
     }
 
     if (totalRetries > 2) {
-      throw new BadBody(identifier, '{}', options.body || '{}');
+      throw new BadBody(identifier, '{}', options.body || '{}', message);
     }
 
     let json = '{}';
@@ -178,7 +181,8 @@ export abstract class SocialAbstract {
         options,
         identifier,
         totalRetries + 1,
-        ignoreConcurrency
+        ignoreConcurrency,
+        handleError?.value || 'Unknown Error'
       );
     }
 
@@ -189,7 +193,8 @@ export abstract class SocialAbstract {
         options,
         identifier,
         totalRetries + 1,
-        ignoreConcurrency
+        ignoreConcurrency,
+        handleError?.value || 'Unknown Error'
       );
     }
 
@@ -210,7 +215,7 @@ export abstract class SocialAbstract {
       identifier,
       json,
       options.body!,
-      handleError?.value || ''
+      handleError?.value || 'Unknown Error'
     );
   }
 
