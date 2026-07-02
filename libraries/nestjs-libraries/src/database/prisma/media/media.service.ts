@@ -1,6 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { MediaRepository } from '@gitroom/nestjs-libraries/database/prisma/media/media.repository';
 import { OpenaiService } from '@gitroom/nestjs-libraries/openai/openai.service';
+import { generationError } from '@gitroom/nestjs-libraries/openai/generation.error';
 import { SubscriptionService } from '@gitroom/nestjs-libraries/database/prisma/subscriptions/subscription.service';
 import { Organization } from '@prisma/client';
 import { SaveMediaInformationDto } from '@gitroom/nestjs-libraries/dtos/media/save.media.information.dto';
@@ -37,19 +38,23 @@ export class MediaService {
     org: Organization,
     generatePromptFirst?: boolean
   ) {
-    const generating = await this._subscriptionService.useCredit(
-      org,
-      'ai_images',
-      async () => {
-        if (generatePromptFirst) {
-          prompt = await this._openAi.generatePromptForPicture(prompt);
-          console.log('Prompt:', prompt);
+    try {
+      const generating = await this._subscriptionService.useCredit(
+        org,
+        'ai_images',
+        async () => {
+          if (generatePromptFirst) {
+            prompt = await this._openAi.generatePromptForPicture(prompt);
+            console.log('Prompt:', prompt);
+          }
+          return this._openAi.generateImage(prompt);
         }
-        return this._openAi.generateImage(prompt);
-      }
-    );
+      );
 
-    return generating;
+      return generating;
+    } catch (err) {
+      throw generationError(err);
+    }
   }
 
   saveFile(org: string, fileName: string, filePath: string, originalName?: string) {
@@ -82,54 +87,61 @@ export class MediaService {
   }
 
   async generateVideo(org: Organization, body: VideoDto) {
-    const billingEnabled = !!process.env.STRIPE_PUBLISHABLE_KEY;
+    try {
+      const billingEnabled = !!process.env.STRIPE_PUBLISHABLE_KEY;
 
-    if (billingEnabled) {
-      const totalCredits = await this._subscriptionService.checkCredits(
-        org,
-        'ai_videos'
-      );
+      if (billingEnabled) {
+        const totalCredits = await this._subscriptionService.checkCredits(
+          org,
+          'ai_videos'
+        );
 
-      if (totalCredits.credits <= 0) {
-        throw new SubscriptionException({
-          action: AuthorizationActions.Create,
-          section: Sections.VIDEOS_PER_MONTH,
-        });
+        if (totalCredits.credits <= 0) {
+          throw new SubscriptionException({
+            action: AuthorizationActions.Create,
+            section: Sections.VIDEOS_PER_MONTH,
+          });
+        }
       }
-    }
 
-    const video = this._videoManager.getVideoByName(body.type);
-    if (!video) {
-      throw new Error(`Video type ${body.type} not found`);
-    }
+      const video = this._videoManager.getVideoByName(body.type);
+      if (!video) {
+        throw new Error(`Video type ${body.type} not found`);
+      }
 
-    if (!video.trial && org.isTrailing) {
-      throw new HttpException('This video is not available in trial mode', 406);
-    }
+      if (!video.trial && org.isTrailing) {
+        throw new HttpException(
+          'This video is not available in trial mode',
+          406
+        );
+      }
 
-    console.log(body.customParams);
-    await video.instance.processAndValidate(body.customParams);
-    console.log('no err');
+      console.log(body.customParams);
+      await video.instance.processAndValidate(body.customParams);
+      console.log('no err');
 
-    const generateAndSaveVideo = async () => {
-      const loadedData = await video.instance.process(
-        body.output,
-        body.customParams
+      const generateAndSaveVideo = async () => {
+        const loadedData = await video.instance.process(
+          body.output,
+          body.customParams
+        );
+
+        const file = await this.storage.uploadSimple(loadedData);
+        return this.saveFile(org.id, file.split('/').pop(), file);
+      };
+
+      if (!billingEnabled) {
+        return generateAndSaveVideo();
+      }
+
+      return await this._subscriptionService.useCredit(
+        org,
+        'ai_videos',
+        generateAndSaveVideo
       );
-
-      const file = await this.storage.uploadSimple(loadedData);
-      return this.saveFile(org.id, file.split('/').pop(), file);
-    };
-
-    if (!billingEnabled) {
-      return generateAndSaveVideo();
+    } catch (err) {
+      throw generationError(err);
     }
-
-    return await this._subscriptionService.useCredit(
-      org,
-      'ai_videos',
-      generateAndSaveVideo
-    );
   }
 
   async videoFunction(identifier: string, functionName: string, body: any) {
