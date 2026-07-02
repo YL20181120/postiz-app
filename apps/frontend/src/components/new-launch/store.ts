@@ -40,8 +40,10 @@ interface StoreState {
   current: string;
   comments: boolean | 'no-media';
   locked: boolean;
+  providerErrors: Record<string, string>;
   hide: boolean;
   setLocked: (locked: boolean) => void;
+  setProviderError: (integrationId: string, error?: string) => void;
   integrations: Integrations[];
   selectedIntegrations: SelectedIntegrations[];
   global: Values[];
@@ -149,6 +151,7 @@ const initialState = {
   isCreateSet: false,
   current: 'global',
   locked: false,
+  providerErrors: {} as Record<string, string>,
   hide: false,
   integrations: [] as Integrations[],
   selectedIntegrations: [] as SelectedIntegrations[],
@@ -369,7 +372,10 @@ export const useLaunchStore = create<StoreState>()((set) => ({
           if (item.integration.id === integrationId) {
             const targetIndex = direction === 'up' ? index - 1 : index + 1;
 
-            if (targetIndex < 0 || targetIndex >= item.integrationValue.length) {
+            if (
+              targetIndex < 0 ||
+              targetIndex >= item.integrationValue.length
+            ) {
               return item;
             }
 
@@ -525,6 +531,16 @@ export const useLaunchStore = create<StoreState>()((set) => ({
     set((state) => ({
       locked: locked,
     })),
+  setProviderError: (integrationId: string, error?: string) =>
+    set((state) => {
+      const providerErrors = { ...state.providerErrors };
+      if (error) {
+        providerErrors[integrationId] = error;
+      } else {
+        delete providerErrors[integrationId];
+      }
+      return { providerErrors };
+    }),
   setHide: (hide: boolean) =>
     set((state) => ({
       hide: hide,

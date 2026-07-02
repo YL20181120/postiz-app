@@ -25,6 +25,7 @@ import utc from 'dayjs/plugin/utc';
 import { AutopostRepository } from '@gitroom/nestjs-libraries/database/prisma/autopost/autopost.repository';
 import { RefreshIntegrationService } from '@gitroom/nestjs-libraries/integrations/refresh.integration.service';
 import { TemporalService } from 'nestjs-temporal-core';
+import { TiktokProvider } from '@gitroom/nestjs-libraries/integrations/social/tiktok.provider';
 
 dayjs.extend(utc);
 
@@ -163,6 +164,33 @@ export class IntegrationService {
 
   getIntegrationById(org: string, id: string) {
     return this._integrationRepository.getIntegrationById(org, id);
+  }
+
+  async getTikTokCreatorInfo(org: string, id: string) {
+    const integration = await this._integrationRepository.getIntegrationById(
+      org,
+      id
+    );
+    if (!integration || integration.providerIdentifier !== 'tiktok') {
+      throw new HttpException(
+        'TikTok integration not found',
+        HttpStatus.NOT_FOUND
+      );
+    }
+
+    const provider = this._integrationManager.getSocialIntegration(
+      integration.providerIdentifier
+    ) as TiktokProvider;
+
+    try {
+      return await provider.creatorInfo(integration.token);
+    } catch (error: any) {
+      throw new HttpException(
+        error?.message ||
+          'Unable to load TikTok creator information. Please try again later.',
+        HttpStatus.BAD_GATEWAY
+      );
+    }
   }
 
   async refreshToken(provider: SocialProvider, refresh: string) {

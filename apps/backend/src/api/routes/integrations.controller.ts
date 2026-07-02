@@ -58,6 +58,14 @@ export class IntegrationsController {
     return this._integrationManager.getInternalPlugs(identifier);
   }
 
+  @Get('/tiktok/:id/creator-info')
+  getTikTokCreatorInfo(
+    @GetOrgFromRequest() org: Organization,
+    @Param('id') id: string
+  ) {
+    return this._integrationService.getTikTokCreatorInfo(org.id, id);
+  }
+
   @Get('/customers')
   getCustomers(@GetOrgFromRequest() org: Organization) {
     return this._integrationService.customers(org.id);
