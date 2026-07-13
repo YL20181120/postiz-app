@@ -433,7 +433,7 @@ export const ManageModal: FC<AddEditModalProps> = (props) => {
             type === 'now' && hasTikTokDirectPost
               ? t(
                   'tiktok_post_submitted_successfully',
-                  'Your post was submitted to TikTok. TikTok may take a few minutes to process it before it appears on your profile. Postiz will monitor the publishing status until processing is complete.'
+                  'Your post was submitted to TikTok. TikTok may take a few minutes to process it before it appears on your profile. Veloop will monitor the publishing status until processing is complete.'
                 )
               : !existingData.integration
               ? t('added_successfully', 'Added successfully')

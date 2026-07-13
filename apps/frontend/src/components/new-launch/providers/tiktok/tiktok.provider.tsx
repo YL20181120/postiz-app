@@ -94,6 +94,7 @@ const TikTokSettings: FC<{
     'tiktok_branded_content_description',
     `You are promoting another brand or a third party. This ${mediaType} will be classified as Branded Content.`
   );
+  const shouldShowBrandedContentPolicy = disclose && brand_content_toggle;
 
   useEffect(() => {
     if (!integration?.id) return;
@@ -573,12 +574,12 @@ const TikTokSettings: FC<{
       )}
       {!isUploadMode && (
         <div className="text-[14px] mt-[20px] text-balance">
-          {t(
-            'by_posting_you_agree_to_tiktoks',
-            "By posting, you agree to TikTok's"
-          )}{' '}
-          {brand_content_toggle && (
+          {shouldShowBrandedContentPolicy ? (
             <>
+              {t(
+                'by_posting_you_agree_to_tiktoks',
+                "By posting, you agree to TikTok's"
+              )}{' '}
               <a
                 target="_blank"
                 rel="noreferrer"
@@ -588,21 +589,37 @@ const TikTokSettings: FC<{
                 {t('branded_content_policy', 'Branded Content Policy')}
               </a>{' '}
               {t('and', 'and')}{' '}
+              <a
+                target="_blank"
+                rel="noreferrer"
+                className="text-newTextItemFocused hover:underline"
+                href="https://www.tiktok.com/legal/page/global/music-usage-confirmation/en"
+              >
+                {t('music_usage_confirmation', 'Music Usage Confirmation')}
+              </a>
+              .
+            </>
+          ) : (
+            <>
+              {t(
+                'by_posting_you_agree_to_tiktoks',
+                "By posting, you agree to TikTok's"
+              )}{' '}
+              <a
+                target="_blank"
+                rel="noreferrer"
+                className="text-newTextItemFocused hover:underline"
+                href="https://www.tiktok.com/legal/page/global/music-usage-confirmation/en"
+              >
+                {t('music_usage_confirmation', 'Music Usage Confirmation')}
+              </a>
+              .
             </>
           )}
-          <a
-            target="_blank"
-            rel="noreferrer"
-            className="text-newTextItemFocused hover:underline"
-            href="https://www.tiktok.com/legal/page/global/music-usage-confirmation/en"
-          >
-            {t('music_usage_confirmation', 'Music Usage Confirmation')}
-          </a>
-          .
           <div className="mt-[10px] text-[12px] text-gray">
             {t(
               'tiktok_processing_notice',
-              'After publishing, TikTok may take a few minutes to process the content and make it visible on your profile. Postiz will monitor the publishing status until processing is complete.'
+              'After publishing, TikTok may take a few minutes to process the content and make it visible on your profile. Veloop will monitor the publishing status until processing is complete.'
             )}
           </div>
         </div>
