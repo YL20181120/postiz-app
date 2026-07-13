@@ -93,7 +93,7 @@ export class TiktokProvider extends SocialAbstract implements SocialProvider {
       settings.brand_content_toggle &&
       settings.privacy_level === 'SELF_ONLY'
     ) {
-      return "Branded content visibility can't be private.";
+      return 'Branded content visibility cannot be set to private.';
     }
   }
 

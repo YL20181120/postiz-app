@@ -83,9 +83,13 @@ const TikTokSettings: FC<{
   const brand_content_toggle = watch('brand_content_toggle');
   const content_posting_method = watch('content_posting_method');
   const selectedPrivacyLevel = watch('privacy_level');
+  const isDirectPostMode = content_posting_method === 'DIRECT_POST';
   const isUploadMode = content_posting_method === 'UPLOAD';
   const commercialDisclosureError =
-    !isUploadMode && disclose && !brand_organic_toggle && !brand_content_toggle
+    isDirectPostMode &&
+    disclose &&
+    !brand_organic_toggle &&
+    !brand_content_toggle
       ? t(
           'tiktok_commercial_content_selection_required',
           'You need to indicate if your content promotes yourself, a third party, or both.'
@@ -96,6 +100,33 @@ const TikTokSettings: FC<{
     : isVideo
     ? t('video', 'video')
     : t('photo_or_video', 'photo/video');
+  const disclosureLabel = t(
+    'label_disclose_tiktok_content',
+    `Disclose ${mediaType} content`
+  );
+  const disclosureDescription = t(
+    'tiktok_commercial_content_description',
+    `Turn on to disclose that this ${mediaType} promotes goods or services in exchange for something of value. Your ${mediaType} could promote yourself, a third party, or both.`
+  );
+  const commercialContentLabel = brand_content_toggle
+    ? t(
+        'tiktok_paid_partnership_label',
+        `Your ${mediaType} will be labeled as 'Paid partnership'.`
+      )
+    : brand_organic_toggle
+    ? t(
+        'tiktok_promotional_content_label',
+        `Your ${mediaType} will be labeled as 'Promotional content'.`
+      )
+    : '';
+  const yourBrandDescription = t(
+    'tiktok_your_brand_description',
+    `You are promoting yourself or your own business. This ${mediaType} will be classified as Brand Organic.`
+  );
+  const brandedContentDescription = t(
+    'tiktok_branded_content_description',
+    `You are promoting another brand or a third party. This ${mediaType} will be classified as Branded Content.`
+  );
 
   useEffect(() => {
     if (!integration?.id) return;
@@ -350,7 +381,7 @@ const TikTokSettings: FC<{
               brand_content_toggle && item.value === 'SELF_ONLY'
                 ? t(
                     'tiktok_branded_content_private_error',
-                    "Branded content visibility can't be private."
+                    'Branded content visibility cannot be set to private.'
                   )
                 : undefined
             }
@@ -368,11 +399,11 @@ const TikTokSettings: FC<{
       </div>
       <Select
         label={t('label_content_posting_method', 'Content posting method')}
-        {...register('content_posting_method', {
-          value: 'DIRECT_POST',
-        })}
+        {...register('content_posting_method')}
       >
-        <option value="">{t('select', 'Select')}</option>
+        <option value="">
+          {t('select_tiktok_posting_method', 'Select posting method')}
+        </option>
         {contentPostingMethod.map((item) => (
           <option key={item.value} value={item.value}>
             {item.label}
@@ -449,17 +480,26 @@ const TikTokSettings: FC<{
         />
         <Checkbox
           variant="hollow"
-          label={t(
-            'label_disclose_commercial_content',
-            'Disclose commercial content'
-          )}
+          label={disclosureLabel}
           disabled={isUploadMode}
           {...register('disclose', {
             value: false,
           })}
         />
-        {disclose && (brand_organic_toggle || brand_content_toggle) && (
-          <div className="bg-tableBorder p-[10px] mt-[10px] rounded-[10px] flex gap-[20px] items-center">
+        {!disclose && (
+          <div className="text-[14px] my-[10px] text-balance">
+            {disclosureDescription}
+          </div>
+        )}
+      </div>
+      <div
+        className={clsx(
+          !disclose && 'invisible h-0 overflow-hidden',
+          'mt-[20px] flex flex-col gap-[10px]'
+        )}
+      >
+        {!!commercialContentLabel && (
+          <div className="bg-tableBorder p-[10px] rounded-[10px] flex gap-[20px] items-center">
             <div>
               <svg
                 width="24"
@@ -475,14 +515,7 @@ const TikTokSettings: FC<{
               </svg>
             </div>
             <div>
-              {t(
-                brand_content_toggle
-                  ? 'tiktok_paid_partnership_label'
-                  : 'tiktok_promotional_content_label',
-                brand_content_toggle
-                  ? `Your ${mediaType} will be labeled as 'Paid partnership'.`
-                  : `Your ${mediaType} will be labeled as 'Promotional content'.`
-              )}
+              {commercialContentLabel}
               <br />
               {t(
                 'this_cannot_be_changed_once_posted',
@@ -491,19 +524,13 @@ const TikTokSettings: FC<{
             </div>
           </div>
         )}
-        <div className="text-[14px] my-[10px] text-balance">
+        <div className="text-[14px] text-balance">{disclosureDescription}</div>
+        <div className="text-balance text-[13px] text-gray">
           {t(
-            'turn_on_to_disclose_content_promotes',
-            'Turn on to disclose that this content promotes goods or services in exchange for something of value. It may promote yourself, a third party, or both.'
+            'tiktok_commercial_content_multiple_selection',
+            'Select Your brand, Branded content, or both. At least one option is required when commercial content disclosure is turned on.'
           )}
         </div>
-      </div>
-      <div
-        className={clsx(
-          !disclose && 'invisible h-0 overflow-hidden',
-          'mt-[20px]'
-        )}
-      >
         <Checkbox
           variant="hollow"
           label={t('label_your_brand', 'Your brand')}
@@ -513,45 +540,61 @@ const TikTokSettings: FC<{
           })}
         />
         <div className="text-balance my-[10px] text-[14px]">
-          {t(
-            'you_are_promoting_yourself',
-            'You are promoting yourself or your own brand.'
-          )}
-          <br />
-          {t(
-            'tiktok_brand_organic_classification',
-            `This ${mediaType} will be classified as Brand Organic.`
+          {yourBrandDescription}
+          {brand_organic_toggle && !brand_content_toggle && (
+            <>
+              <br />
+              {t(
+                'tiktok_your_brand_promotional_content_prompt',
+                `Your ${mediaType} will be labeled as 'Promotional content'.`
+              )}
+            </>
           )}
         </div>
-        <Checkbox
-          variant="hollow"
-          label={t('label_branded_content', 'Branded content')}
-          disabled={isUploadMode || selectedPrivacyLevel === 'SELF_ONLY'}
-          {...register('brand_content_toggle', {
-            value: false,
-          })}
-        />
+        <div
+          title={
+            selectedPrivacyLevel === 'SELF_ONLY'
+              ? t(
+                  'tiktok_branded_content_private_hover',
+                  'Branded content visibility cannot be set to private.'
+                )
+              : undefined
+          }
+        >
+          <Checkbox
+            variant="hollow"
+            label={t('label_branded_content', 'Branded content')}
+            disabled={isUploadMode || selectedPrivacyLevel === 'SELF_ONLY'}
+            {...register('brand_content_toggle', {
+              value: false,
+            })}
+          />
+        </div>
         <div className="text-balance my-[10px] text-[14px]">
-          {t(
-            'you_are_promoting_another_brand',
-            'You are promoting another brand or a third party.'
-          )}
-          <br />
-          {t(
-            'tiktok_branded_content_classification',
-            `This ${mediaType} will be classified as Branded Content.`
+          {brandedContentDescription}
+          {brand_content_toggle && (
+            <>
+              <br />
+              {t(
+                'tiktok_branded_content_paid_partnership_prompt',
+                `Your ${mediaType} will be labeled as 'Paid partnership'.`
+              )}
+            </>
           )}
         </div>
         {(brand_content_toggle || selectedPrivacyLevel === 'SELF_ONLY') && (
           <div className="text-[12px] text-red-400 mb-[10px]">
             {t(
               'tiktok_branded_content_private_error',
-              "Branded content visibility can't be private."
+              'Branded content visibility cannot be set to private.'
             )}
           </div>
         )}
         {!!commercialDisclosureError && (
-          <div className="text-[12px] text-red-400 my-[10px]">
+          <div
+            className="text-[12px] text-red-400 my-[10px]"
+            title={commercialDisclosureError}
+          >
             {commercialDisclosureError}
           </div>
         )}

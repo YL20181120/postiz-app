@@ -55,8 +55,10 @@ export class TikTokDto {
   @IsBoolean()
   brand_organic_toggle: boolean;
 
-  @IsIn(['DIRECT_POST', 'UPLOAD'])
-  @IsString()
+  @IsIn(['DIRECT_POST', 'UPLOAD'], {
+    message: 'Please select a TikTok posting method',
+  })
+  @IsString({ message: 'Please select a TikTok posting method' })
   content_posting_method: 'DIRECT_POST' | 'UPLOAD';
 
   @ValidateIf((p) => typeof p.video_duration_valid !== 'undefined')
