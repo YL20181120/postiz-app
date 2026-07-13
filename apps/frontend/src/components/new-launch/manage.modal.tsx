@@ -44,6 +44,41 @@ import { useShortlinkPreference } from '@gitroom/frontend/components/settings/sh
 import dayjs from 'dayjs';
 import { Button } from '@gitroom/react/form/button';
 
+const TikTokDirectPostSuccessModal: FC<{
+  onConfirm: () => void;
+}> = ({ onConfirm }) => {
+  const t = useT();
+
+  return (
+    <div className="fixed inset-0 bg-popup flex items-center justify-center p-[20px] text-newTextColor">
+      <div className="bg-newBgColorInner border border-newTableBorder rounded-[16px] w-full max-w-[520px] p-[28px] flex flex-col gap-[20px] shadow-menu">
+        <div className="flex items-start gap-[14px]">
+          <div className="w-[34px] h-[34px] rounded-full bg-[#00F2EA] text-black flex items-center justify-center font-[700] shrink-0">
+            OK
+          </div>
+          <div className="flex flex-col gap-[8px]">
+            <div className="text-[22px] font-[700]">
+              {t(
+                'tiktok_direct_post_submitted_title',
+                'TikTok Direct Post submitted'
+              )}
+            </div>
+            <div className="text-[14px] leading-[22px] text-gray">
+              {t(
+                'tiktok_direct_post_submitted_description',
+                'Your post has been submitted to TikTok. TikTok may take a few minutes to process it before it appears on your profile. Veloop will monitor the publishing status until processing is complete.'
+              )}
+            </div>
+          </div>
+        </div>
+        <Button className="w-full rounded-[8px]" onClick={onConfirm}>
+          {t('confirm', 'Confirm')}
+        </Button>
+      </div>
+    </div>
+  );
+};
+
 export const ManageModal: FC<AddEditModalProps> = (props) => {
   const t = useT();
   const fetch = useFetch();
@@ -429,26 +464,40 @@ export const ManageModal: FC<AddEditModalProps> = (props) => {
               body: JSON.stringify(data),
             });
 
+        const showTikTokDirectPostSuccess =
+          type !== 'draft' && hasTikTokDirectPost;
+
         if (!addEditSets) {
           mutate();
-          toaster.show(
-            type === 'now' && hasTikTokDirectPost
-              ? t(
-                  'tiktok_post_submitted_successfully',
-                  'Your post was submitted to TikTok. TikTok may take a few minutes to process it before it appears on your profile. Veloop will monitor the publishing status until processing is complete.'
-                )
-              : !existingData.integration
-              ? t('added_successfully', 'Added successfully')
-              : t('updated_successfully', 'Updated successfully')
-          );
+          if (showTikTokDirectPostSuccess) {
+            modal.openModal({
+              title: '',
+              removeLayout: true,
+              withCloseButton: false,
+              children: (
+                <TikTokDirectPostSuccessModal
+                  onConfirm={() => {
+                    modal.closeAll();
+                    customClose?.();
+                  }}
+                />
+              ),
+            });
+          } else {
+            toaster.show(
+              !existingData.integration
+                ? t('added_successfully', 'Added successfully')
+                : t('updated_successfully', 'Updated successfully')
+            );
+          }
         }
-        if (customClose) {
+        if (customClose && !showTikTokDirectPostSuccess) {
           setTimeout(() => {
             customClose();
           }, 2000);
         }
 
-        if (!addEditSets) {
+        if (!addEditSets && !showTikTokDirectPostSuccess) {
           modal.closeAll();
         }
       }
