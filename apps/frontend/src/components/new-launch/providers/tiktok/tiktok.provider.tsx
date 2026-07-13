@@ -50,8 +50,33 @@ const TikTokSettings: FC<{
   const brand_content_toggle = watch('brand_content_toggle');
   const content_posting_method = watch('content_posting_method');
   const selectedPrivacyLevel = watch('privacy_level');
+  const video_duration_valid = watch('video_duration_valid');
   const isDirectPostMode = content_posting_method === 'DIRECT_POST';
   const isUploadMode = content_posting_method === 'UPLOAD';
+  const creatorInfoUnavailableError =
+    isDirectPostMode && creatorInfoError
+      ? creatorInfoError.message ||
+        t(
+          'tiktok_creator_info_error',
+          'Unable to load this creator’s TikTok posting settings. Please try again later.'
+        )
+      : '';
+  const creatorPostUnavailableError =
+    isDirectPostMode &&
+    !!creatorInfo &&
+    creatorInfo.privacyLevelOptions.length === 0
+      ? t(
+          'tiktok_creator_cannot_post_now',
+          'TikTok says this creator cannot make more posts at this moment. Please try again later.'
+        )
+      : '';
+  const creatorInfoLoadingError =
+    isDirectPostMode && creatorInfoLoading
+      ? t(
+          'tiktok_creator_info_loading',
+          'Loading the latest TikTok creator posting settings. Please wait.'
+        )
+      : '';
   const commercialDisclosureError =
     isDirectPostMode &&
     disclose &&
@@ -62,6 +87,20 @@ const TikTokSettings: FC<{
           'You need to indicate if your content promotes yourself, a third party, or both.'
         )
       : '';
+  const videoDurationBlockingError =
+    isDirectPostMode && isVideo && video_duration_valid === false
+      ? videoDurationError ||
+        t(
+          'tiktok_video_duration_unavailable',
+          'Unable to verify the video duration. Please select the video again.'
+        )
+      : '';
+  const providerError =
+    creatorInfoUnavailableError ||
+    creatorPostUnavailableError ||
+    creatorInfoLoadingError ||
+    videoDurationBlockingError ||
+    commercialDisclosureError;
   const mediaType = isTitle
     ? t('photo', 'photo')
     : isVideo
@@ -98,9 +137,9 @@ const TikTokSettings: FC<{
 
   useEffect(() => {
     if (!integration?.id) return;
-    setProviderError(integration.id, commercialDisclosureError || undefined);
+    setProviderError(integration.id, providerError || undefined);
     return () => setProviderError(integration.id, undefined);
-  }, [commercialDisclosureError, integration?.id, setProviderError]);
+  }, [integration?.id, providerError, setProviderError]);
 
   useEffect(() => {
     if (disclose && !isUploadMode) return;
@@ -303,6 +342,11 @@ const TikTokSettings: FC<{
               'tiktok_creator_info_error',
               'Unable to load this creator’s TikTok posting settings. Please try again later.'
             )}
+        </div>
+      )}
+      {!!creatorPostUnavailableError && (
+        <div className="text-red-400 text-[12px] mb-[18px]">
+          {creatorPostUnavailableError}
         </div>
       )}
       {/*<CheckTikTokValidity picture={props?.values?.[0]?.image?.[0]?.path} />*/}

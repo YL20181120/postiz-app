@@ -8,7 +8,9 @@
 @tailwind utilities;
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 body {
@@ -787,6 +789,10 @@ html[dir='rtl'] [dir='ltr'] {
 }
 .btnSub:disabled + button {
   display: none !important;
+}
+
+.group:hover .btnSub:disabled + button.publish-now-menu {
+  display: flex !important;
 }
 
 .tiptap p.is-editor-empty:first-child::before {

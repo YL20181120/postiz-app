@@ -97,6 +97,8 @@ export const ManageModal: FC<AddEditModalProps> = (props) => {
     .map(({ integration }) => providerErrors[integration.id])
     .find(Boolean);
   const publishBlocked = !!publishValidationError;
+  const publishDisabled =
+    selectedIntegrations.length === 0 || loading || locked || publishBlocked;
 
   useEffect(() => {
     if (hide) {
@@ -626,7 +628,10 @@ export const ManageModal: FC<AddEditModalProps> = (props) => {
             )}
             {!addEditSets && (
               <div
-                className="group cursor-pointer relative"
+                className={clsx(
+                  'group relative',
+                  publishDisabled ? 'cursor-not-allowed' : 'cursor-pointer'
+                )}
                 {...(publishValidationError
                   ? {
                       'data-tooltip-id': 'tooltip',
@@ -635,14 +640,14 @@ export const ManageModal: FC<AddEditModalProps> = (props) => {
                   : {})}
               >
                 <button
-                  disabled={
-                    selectedIntegrations.length === 0 ||
-                    loading ||
-                    locked ||
-                    publishBlocked
-                  }
+                  disabled={publishDisabled}
                   onClick={schedule('schedule')}
-                  className="text-white relative min-w-[180px] btnSub disabled:cursor-not-allowed disabled:opacity-80 outline-none gap-[8px] flex justify-center items-center h-[44px] rounded-[8px] bg-[#612BD3] ps-[20px] pe-[16px]"
+                  className={clsx(
+                    'relative min-w-[180px] btnSub outline-none gap-[8px] flex justify-center items-center h-[44px] rounded-[8px] ps-[20px] pe-[16px] transition-colors',
+                    publishDisabled
+                      ? 'bg-tableBorder text-gray cursor-not-allowed opacity-70'
+                      : 'bg-[#612BD3] text-white'
+                  )}
                 >
                   {loading && (
                     <div className="absolute left-[50%] top-[50%] -translate-y-[50%] -translate-x-[50%]">
@@ -667,7 +672,12 @@ export const ManageModal: FC<AddEditModalProps> = (props) => {
                   </div>
                   {!dummy && (
                     <div className="flex justify-center items-center h-[20px] w-[20px] pt-[4px] arrow-change">
-                      <DropdownArrowSmallIcon className="group-hover:rotate-180 text-white" />
+                      <DropdownArrowSmallIcon
+                        className={clsx(
+                          'group-hover:rotate-180',
+                          publishDisabled ? 'text-gray' : 'text-white'
+                        )}
+                      />
                     </div>
                   )}
                 </button>
@@ -675,15 +685,17 @@ export const ManageModal: FC<AddEditModalProps> = (props) => {
                 {!dummy && (
                   <button
                     onClick={schedule('now')}
-                    disabled={
-                      selectedIntegrations.length === 0 ||
-                      loading ||
-                      locked ||
-                      publishBlocked
-                    }
-                    className="rounded-[8px] z-[300] disabled:cursor-not-allowed disabled:opacity-80 hidden group-hover:flex absolute bottom-[100%] -left-[12px] p-[12px] w-[206px] bg-newBgColorInner"
+                    disabled={publishDisabled}
+                    className="publish-now-menu rounded-[8px] z-[300] disabled:cursor-not-allowed hidden group-hover:flex absolute bottom-[100%] -left-[12px] p-[12px] w-[206px] bg-newBgColorInner"
                   >
-                    <div className="text-white rounded-[8px] bg-[#D82D7E] h-[44px] w-full flex justify-center items-center post-now">
+                    <div
+                      className={clsx(
+                        'rounded-[8px] h-[44px] w-full flex justify-center items-center post-now transition-colors',
+                        publishDisabled
+                          ? 'bg-tableBorder text-gray opacity-70'
+                          : 'bg-[#D82D7E] text-white'
+                      )}
+                    >
                       {t('post_now', 'Post Now')}
                     </div>
                   </button>
