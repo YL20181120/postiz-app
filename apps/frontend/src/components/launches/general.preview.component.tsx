@@ -7,13 +7,32 @@ import { textSlicer } from '@gitroom/helpers/utils/count.length';
 import SafeImage from '@gitroom/react/helpers/safe.image';
 import { useLaunchStore } from '@gitroom/frontend/components/new-launch/store';
 import { stripHtmlValidation } from '@gitroom/helpers/utils/strip.html.validation';
+import { useTikTokCreatorInfo } from '@gitroom/frontend/components/new-launch/providers/tiktok/use.tiktok.creator-info';
 
 export const GeneralPreviewComponent: FC<{
   maximumCharacters?: number;
 }> = (props) => {
-  const { value: topValue, integration } = useIntegration();
+  const { value: topValue, integration, allIntegrations } = useIntegration();
   const current = useLaunchStore((state) => state.current);
   const mediaDir = useMediaDirectory();
+  const globalTikTokIntegration =
+    current === 'global'
+      ? allIntegrations.find((item) => item.identifier === 'tiktok')
+      : undefined;
+  const { data: tikTokCreatorInfo } = useTikTokCreatorInfo(
+    globalTikTokIntegration?.id
+  );
+  const globalPreviewAvatar =
+    tikTokCreatorInfo?.avatarUrl ||
+    globalTikTokIntegration?.picture ||
+    '/no-picture.jpg';
+  const globalPreviewName =
+    tikTokCreatorInfo?.nickname ||
+    globalTikTokIntegration?.name ||
+    'Global Edit';
+  const globalPreviewDisplay = tikTokCreatorInfo?.username
+    ? `@${tikTokCreatorInfo.username}`
+    : globalTikTokIntegration?.display || '';
 
   const renderContent = topValue.map((p) => {
     const newContent = stripHtmlValidation(
@@ -65,18 +84,26 @@ export const GeneralPreviewComponent: FC<{
                 <img
                   src={
                     current === 'global'
-                      ? '/no-picture.jpg'
+                      ? globalPreviewAvatar
                       : integration?.picture || '/no-picture.jpg'
                   }
-                  alt="x"
+                  alt={current === 'global' ? globalPreviewName : 'x'}
                   className="rounded-full relative z-[2]"
                 />
 
-                {current !== 'global' && (
+                {(current !== 'global' || !!globalTikTokIntegration) && (
                   <SafeImage
-                    src={`/icons/platforms/${integration?.identifier}.png`}
+                    src={`/icons/platforms/${
+                      current === 'global'
+                        ? globalTikTokIntegration?.identifier
+                        : integration?.identifier
+                    }.png`}
                     className="min-w-[20px] min-h-[20px] rounded-full absolute z-10 -bottom-[5px] -end-[5px] border border-fifth"
-                    alt={integration.identifier}
+                    alt={
+                      current === 'global'
+                        ? globalTikTokIntegration?.identifier || 'tiktok'
+                        : integration.identifier
+                    }
                     width={20}
                     height={20}
                   />
@@ -89,7 +116,7 @@ export const GeneralPreviewComponent: FC<{
             <div className="flex-1 flex flex-col gap-[4px]">
               <div className="flex">
                 <div className="h-[22px] text-[15px] font-[700]">
-                  {current === 'global' ? 'Global Edit' : integration?.name}
+                  {current === 'global' ? globalPreviewName : integration?.name}
                 </div>
                 <div className="text-[15px] text-customColor26 mt-[1px] ms-[2px]">
                   <svg
@@ -106,7 +133,7 @@ export const GeneralPreviewComponent: FC<{
                 </div>
                 <div className="text-[15px] font-[400] text-customColor27 ms-[4px]">
                   {current === 'global'
-                    ? ''
+                    ? globalPreviewDisplay
                     : integration?.display || '@username'}
                 </div>
               </div>

@@ -277,6 +277,12 @@ export const ManageModal: FC<AddEditModalProps> = (props) => {
             ) || [],
         })),
       }));
+      const hasTikTokDirectPost = allValues.some((post: any) => {
+        return (
+          integrationById(post.id)?.integration?.identifier === 'tiktok' &&
+          post.settings?.content_posting_method === 'DIRECT_POST'
+        );
+      });
 
       if (!dummy) {
         const checkAllValid = await (
@@ -424,7 +430,12 @@ export const ManageModal: FC<AddEditModalProps> = (props) => {
         if (!addEditSets) {
           mutate();
           toaster.show(
-            !existingData.integration
+            type === 'now' && hasTikTokDirectPost
+              ? t(
+                  'tiktok_post_submitted_successfully',
+                  'Your post was submitted to TikTok. TikTok may take a few minutes to process it before it appears on your profile. Postiz will monitor the publishing status until processing is complete.'
+                )
+              : !existingData.integration
               ? t('added_successfully', 'Added successfully')
               : t('updated_successfully', 'Updated successfully')
           );

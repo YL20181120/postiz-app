@@ -1,6 +1,6 @@
 'use client';
 
-import { FC, useCallback, useEffect, useMemo, useState } from 'react';
+import { FC, useEffect, useMemo, useState } from 'react';
 import {
   PostComment,
   withProvider,
@@ -15,42 +15,9 @@ import { useIntegration } from '@gitroom/frontend/components/launches/helpers/us
 import { Input } from '@gitroom/react/form/input';
 import { TiktokPreview } from '@gitroom/frontend/components/new-launch/providers/tiktok/tiktok.preview';
 import SafeImage from '@gitroom/react/helpers/safe.image';
-import { useFetch } from '@gitroom/helpers/utils/custom.fetch';
-import useSWR from 'swr';
 import { useLaunchStore } from '@gitroom/frontend/components/new-launch/store';
 import { useMediaDirectory } from '@gitroom/react/helpers/use.media.directory';
-
-type TikTokCreatorInfo = {
-  avatarUrl: string;
-  username: string;
-  nickname: string;
-  privacyLevelOptions: NonNullable<TikTokDto['privacy_level']>[];
-  commentDisabled: boolean;
-  duetDisabled: boolean;
-  stitchDisabled: boolean;
-  maxVideoPostDurationSec: number;
-};
-
-const useTikTokCreatorInfo = (integrationId?: string) => {
-  const fetch = useFetch();
-  const getCreatorInfo = useCallback(async () => {
-    const response = await fetch(
-      `/integrations/tiktok/${integrationId}/creator-info`
-    );
-    if (!response.ok) {
-      const body = await response.json().catch(() => ({}));
-      throw new Error(
-        body?.message || 'Unable to load TikTok creator information'
-      );
-    }
-    return response.json();
-  }, [fetch, integrationId]);
-
-  return useSWR<TikTokCreatorInfo>(
-    integrationId ? `tiktok-creator-info-${integrationId}` : null,
-    getCreatorInfo
-  );
-};
+import { useTikTokCreatorInfo } from '@gitroom/frontend/components/new-launch/providers/tiktok/use.tiktok.creator-info';
 
 const TikTokSettings: FC<{
   values?: any;
